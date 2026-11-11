@@ -4,7 +4,7 @@ Every support ticket from my [AI Support Ticket Triage](https://github.com/jacob
 
 **Live dashboard:** [jacobjohnson-ai.github.io](https://jacobjohnson-ai.github.io/#projects) (open "Support Ticket Dashboard")
 
-![Dashboard](screenshots/dashboard.png)
+![Dashboard](screenshots/live-dashboard.png)
 
 ## The problem
 
