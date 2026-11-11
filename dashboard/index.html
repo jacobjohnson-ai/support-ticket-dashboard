@@ -13,7 +13,7 @@
 html{scroll-behavior:smooth}
 ::-webkit-scrollbar{width:8px;height:8px}::-webkit-scrollbar-track{background:transparent;margin:6px 0}::-webkit-scrollbar-thumb{background:#3a3a3a;border-radius:8px;border:2px solid transparent;background-clip:padding-box}::-webkit-scrollbar-button{display:none;width:0;height:0}
 body{background:var(--bg);color:var(--ink);font-family:Inter,system-ui,sans-serif;line-height:1.5}
-@media(min-width:1700px){body{zoom:1.15}}@media(min-width:2200px){body{zoom:1.35}}
+@media(min-width:2200px){body{zoom:1.15}}
 .wrap{width:90%;max-width:2000px;margin:0 auto;padding:0 24px 60px}
 nav{display:flex;justify-content:space-between;align-items:center;padding:18px 0 8px}
 nav a{color:var(--mute);text-decoration:none;font-size:15px}nav a:hover{color:var(--ink)}
@@ -47,6 +47,7 @@ svg text{fill:var(--mute);font-size:11px;font-family:Inter,system-ui,sans-serif}
 .pill{display:inline-flex;align-items:center;gap:6px;font-size:12px;color:var(--ink)}
 .pill:before{content:"";width:7px;height:7px;border-radius:50%;background:var(--urgent)}
 .embed body{background:var(--card)}.embed nav{display:none}.embed .wrap{width:100%;padding:8px 28px 28px}.embed header{padding-top:22px}.embed .card{background:#1a1a1a}
+.embed ::-webkit-scrollbar{width:10px}.embed ::-webkit-scrollbar-track{background:var(--card);margin:16px 0}.embed ::-webkit-scrollbar-thumb{background:#3a3a3a;border-radius:8px;border:3px solid var(--card);background-clip:border-box}.embed ::-webkit-scrollbar-thumb:hover{background:#5a5a5a}
 .note{color:var(--dim);font-size:13px;margin-top:22px}
 @media(max-width:900px){.stats{grid-template-columns:1fr 1fr}.two{grid-template-columns:1fr}.uitem{grid-template-columns:1fr 1fr}.uitem>:last-child{grid-column:1/-1}}
 </style>
@@ -58,7 +59,7 @@ svg text{fill:var(--mute);font-size:11px;font-family:Inter,system-ui,sans-serif}
 
 <header>
 <h1>Support Ticket Dashboard</h1>
-<p>Live numbers from the AI ticket workflow. Every ticket is classified by AI in n8n and saved to a Postgres database. This page reads only summary views, never names or emails.</p>
+<p>Live numbers from the AI support tools. Tickets come from the AI ticket triage workflow (n8n) and the IT helpdesk agent, and are saved to a Postgres database. This page reads only summary views, never names or emails.</p>
 <div class="live" id="live"><i></i><span>Loading…</span></div>
 </header>
 
@@ -76,7 +77,7 @@ svg text{fill:var(--mute);font-size:11px;font-family:Inter,system-ui,sans-serif}
 
 <div class="card urg"><h2>Recent high-urgency tickets</h2><div class="ulist" id="urg"></div></div>
 
-<p class="note">Sample tickets (fake names, @example.com emails) plus real test runs. Data: Supabase Postgres · Workflow: n8n · AI: Google Gemini.</p>
+<p class="note">Sample tickets (fake names and example email addresses) plus real test runs. Data: Supabase Postgres · Workflow: n8n · Agent: Cloudflare Workers · AI: Google Gemini.</p>
 </div>
 <div class="tip" id="tip"></div>
 
