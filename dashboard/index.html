@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Support Ticket Dashboard · Jacob Johnson</title>
+<link rel="icon" href="https://jacobjohnson-ai.github.io/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0a0a0a;--card:#141414;--line:#262626;--ink:#f2f2f2;--mute:#a3a3a3;--dim:#6b6b6b;--bar:#d4d4d4;--urgent:#f87171}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+::-webkit-scrollbar{width:8px;height:8px}::-webkit-scrollbar-track{background:transparent;margin:6px 0}::-webkit-scrollbar-thumb{background:#3a3a3a;border-radius:8px;border:2px solid transparent;background-clip:padding-box}::-webkit-scrollbar-button{display:none;width:0;height:0}
+body{background:var(--bg);color:var(--ink);font-family:Inter,system-ui,sans-serif;line-height:1.5}
+@media(min-width:1700px){body{zoom:1.15}}@media(min-width:2200px){body{zoom:1.35}}
+.wrap{width:90%;max-width:2000px;margin:0 auto;padding:0 24px 60px}
+nav{display:flex;justify-content:space-between;align-items:center;padding:18px 0 8px}
+nav a{color:var(--mute);text-decoration:none;font-size:15px}nav a:hover{color:var(--ink)}
+header{padding:20px 0 28px}
+h1{font-size:clamp(26px,3.4vw,38px);letter-spacing:-.4px}
+header p{color:var(--mute);margin-top:6px;max-width:760px}
+.live{display:inline-flex;align-items:center;gap:8px;margin-top:12px;font-size:13px;color:var(--mute)}
+.live i{width:8px;height:8px;border-radius:50%;background:#4ade80}
+.live.off i{background:var(--dim)}
+.grid{display:grid;gap:18px}
+.stats{grid-template-columns:repeat(4,1fr)}
+.two{grid-template-columns:1fr 1.75fr;margin-top:18px;align-items:start}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:20px 22px;min-width:0}
+.stat b{display:block;font-size:34px;font-weight:600;letter-spacing:-.5px;margin-top:4px}
+.lbl{color:var(--mute);font-size:13px;letter-spacing:.3px}
+.card h2{font-size:15px;font-weight:600;margin-bottom:14px}
+.bars{display:grid;gap:14px}
+.brow{display:grid;grid-template-columns:110px 1fr 30px;align-items:center;gap:10px;font-size:14px;cursor:default}
+.brow span:first-child{color:var(--mute)}
+.track{height:18px;position:relative}
+.fill{height:100%;background:var(--bar);border-radius:0 4px 4px 0;transition:width 1s cubic-bezier(.2,.7,.2,1),opacity .15s}
+.brow:hover .fill{opacity:.75}
+.brow b{text-align:right;font-weight:500}
+svg text{fill:var(--mute);font-size:11px;font-family:Inter,system-ui,sans-serif}
+.tip{position:fixed;pointer-events:none;background:#1f1f1f;border:1px solid #333;border-radius:8px;padding:6px 10px;font-size:13px;opacity:0;transition:opacity .1s;z-index:9}
+.urg{margin-top:18px}
+.ulist{display:grid;gap:10px}
+.uitem{display:grid;grid-template-columns:150px 140px 60px 1fr;gap:14px;padding:12px 0;border-top:1px solid var(--line);font-size:14px;align-items:baseline}
+.uitem:first-child{border-top:0;padding-top:0}
+.uitem .t{color:var(--mute)}
+.pill{display:inline-flex;align-items:center;gap:6px;font-size:12px;color:var(--ink)}
+.pill:before{content:"";width:7px;height:7px;border-radius:50%;background:var(--urgent)}
+.embed body{background:var(--card)}.embed nav{display:none}.embed .wrap{width:100%;padding:8px 28px 28px}.embed header{padding-top:22px}.embed .card{background:#1a1a1a}
+.note{color:var(--dim);font-size:13px;margin-top:22px}
+@media(max-width:900px){.stats{grid-template-columns:1fr 1fr}.two{grid-template-columns:1fr}.uitem{grid-template-columns:1fr 1fr}.uitem>:last-child{grid-column:1/-1}}
+</style>
+</head>
+<body>
+<script>if(/[?&]embed=1/.test(location.search))document.documentElement.classList.add('embed');</script>
+<div class="wrap">
+<nav><a href="https://jacobjohnson-ai.github.io/">← Jacob Johnson</a><a href="https://jacobjohnson-ai.github.io/#projects">Projects</a></nav>
+
+<header>
+<h1>Support Ticket Dashboard</h1>
+<p>Live numbers from the AI ticket workflow. Every ticket is classified by AI in n8n and saved to a Postgres database. This page reads only summary views, never names or emails.</p>
+<div class="live" id="live"><i></i><span>Loading…</span></div>
+</header>
+
+<div class="grid stats">
+<div class="card stat"><span class="lbl">Total tickets</span><b id="s-total">–</b></div>
+<div class="card stat"><span class="lbl">Last 7 days</span><b id="s-week">–</b></div>
+<div class="card stat"><span class="lbl">High urgency</span><b id="s-urgent">–</b></div>
+<div class="card stat"><span class="lbl">Avg priority</span><b id="s-avg">–</b></div>
+</div>
+
+<div class="grid two">
+<div class="card"><h2>Tickets by category</h2><div class="bars" id="cat"></div></div>
+<div class="card"><h2>Tickets per day · last 30 days</h2><div id="day"></div></div>
+</div>
+
+<div class="card urg"><h2>Recent high-urgency tickets</h2><div class="ulist" id="urg"></div></div>
+
+<p class="note">Sample tickets (fake names, @example.com emails) plus real test runs. Data: Supabase Postgres · Workflow: n8n · AI: Google Gemini.</p>
+</div>
+<div class="tip" id="tip"></div>
+
+<script>
+var URL_='https://pwcpznbqkdlprkkydpnk.supabase.co/rest/v1/';
+var KEY='sb_publishable_-QgwfTu1udPpjH6ndtqGEA_FUUsMz7G';
+var LABEL={technical_issue:'Technical issue',billing:'Billing',sales:'Sales',general:'General',spam:'Spam'};
+var tip=document.getElementById('tip');
+function showTip(e,h){tip.innerHTML=h;tip.style.opacity=1;tip.style.left=(e.clientX+14)+'px';tip.style.top=(e.clientY-10)+'px'}
+function hideTip(){tip.style.opacity=0}
+function get(v){return fetch(URL_+v,{headers:{apikey:KEY}}).then(function(r){if(!r.ok)throw r.status;return r.json()})}
+function fmtDay(s){var d=new Date(s+'T00:00:00');return d.toLocaleDateString('en-US',{month:'short',day:'numeric'})}
+
+var RM=false;
+function countUp(id,to,dec){var el=document.getElementById(id);to=Number(to)||0;
+ if(RM){el.textContent=to.toFixed(dec);return}
+ var t0=null,D=1200;function f(t){if(!t0)t0=t;var p=Math.min(1,(t-t0)/D),e=1-Math.pow(1-p,3);
+  el.textContent=(to*e).toFixed(dec);if(p<1)requestAnimationFrame(f)}requestAnimationFrame(f)}
+function stats(s){s=s[0]||{};
+ countUp('s-total',s.total_tickets,0);countUp('s-week',s.this_week,0);
+ countUp('s-urgent',s.urgent,0);countUp('s-avg',s.avg_priority,1)}
+
+function cats(rows){var max=Math.max.apply(null,rows.map(function(r){return r.tickets}));
+ var el=document.getElementById('cat');el.innerHTML='';
+ rows.forEach(function(r){var d=document.createElement('div');d.className='brow';
+  d.innerHTML='<span>'+(LABEL[r.category]||r.category)+'</span><div class="track"><div class="fill" data-w="'+(r.tickets/max*100)+'" style="width:0"></div></div><b>'+r.tickets+'</b>';
+  el.appendChild(d)});
+ requestAnimationFrame(function(){requestAnimationFrame(function(){el.querySelectorAll('.fill').forEach(function(b,i){b.style.transitionDelay=(RM?0:i*80)+'ms';b.style.width=b.dataset.w+'%'})})})}
+
+function days(rows){var el=document.getElementById('day');
+ var W=Math.max(260,Math.round(el.clientWidth)),H=W<500?180:230,P={l:30,r:22,t:10,b:24},iw=W-P.l-P.r,ih=H-P.t-P.b;
+ var max=Math.max(1,Math.max.apply(null,rows.map(function(r){return r.tickets})));
+ var top=Math.ceil(max/2)*2;
+ var x=function(i){return P.l+(rows.length<2?iw/2:i*iw/(rows.length-1))};
+ var y=function(v){return P.t+ih-v/top*ih};
+ var s='<svg viewBox="0 0 '+W+' '+H+'" width="'+W+'" height="'+H+'" role="img" aria-label="Tickets per day">';
+ [0,top/2,top].forEach(function(v){s+='<line x1="'+P.l+'" x2="'+(W-P.r)+'" y1="'+y(v)+'" y2="'+y(v)+'" stroke="#222"/><text x="'+(P.l-8)+'" y="'+(y(v)+4)+'" text-anchor="end">'+v+'</text>'});
+ var pts=rows.map(function(r,i){return x(i)+','+y(r.tickets)}).join(' ');
+ s+='<polyline points="'+pts+'" fill="none" stroke="#e5e5e5" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" id="ln"/>';
+ var step=Math.max(1,Math.round(rows.length/(W<500?3:6)));
+ rows.forEach(function(r,i){if(i%step===0)s+='<text x="'+x(i)+'" y="'+(H-6)+'" text-anchor="middle">'+fmtDay(r.day)+'</text>'});
+ s+='<line id="xh" y1="'+P.t+'" y2="'+(P.t+ih)+'" stroke="#555" stroke-dasharray="3 3" opacity="0"/><circle id="dot" r="4.5" fill="#f2f2f2" stroke="#141414" stroke-width="2" opacity="0"/>';
+ s+='<rect x="'+P.l+'" y="'+P.t+'" width="'+iw+'" height="'+ih+'" fill="transparent" id="hit"/></svg>';
+ el.innerHTML=s;
+ var svg=el.querySelector('svg'),ln=svg.querySelector('#ln');
+ if(!RM&&!el.dataset.drawn){var L=ln.getTotalLength();ln.style.strokeDasharray=L;ln.style.strokeDashoffset=L;ln.getBoundingClientRect();ln.style.transition='stroke-dashoffset 1.6s ease-out';ln.style.strokeDashoffset=0;el.dataset.drawn=1}
+ var xh=svg.querySelector('#xh'),dot=svg.querySelector('#dot');
+ svg.querySelector('#hit').addEventListener('mousemove',function(e){var b=svg.getBoundingClientRect(),px=(e.clientX-b.left)/b.width*W;
+  var i=Math.round((px-P.l)/iw*(rows.length-1));i=Math.max(0,Math.min(rows.length-1,i));var r=rows[i];
+  xh.setAttribute('x1',x(i));xh.setAttribute('x2',x(i));xh.setAttribute('opacity',1);
+  dot.setAttribute('cx',x(i));dot.setAttribute('cy',y(r.tickets));dot.setAttribute('opacity',1);
+  showTip(e,'<b>'+r.tickets+'</b> tickets · '+fmtDay(r.day))});
+ svg.querySelector('#hit').addEventListener('mouseleave',function(){xh.setAttribute('opacity',0);dot.setAttribute('opacity',0);hideTip()})}
+
+function urg(rows){var el=document.getElementById('urg');el.innerHTML='';
+ if(!rows.length){el.innerHTML='<p class="lbl">No high-urgency tickets.</p>';return}
+ rows.forEach(function(r){var d=document.createElement('div');d.className='uitem';
+  var t=new Date(r.created_at);
+  d.innerHTML='<span class="t">'+t.toLocaleDateString('en-US',{month:'short',day:'numeric'})+', '+t.toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'})+'</span><span class="pill">'+(LABEL[r.category]||r.category)+'</span><span>'+r.priority_score+'/10</span><span>'+r.summary+'</span>';
+  el.appendChild(d)})}
+
+function fillDays(rows){var map={};rows.forEach(function(r){map[r.day]=r.tickets});var out=[];
+ for(var i=29;i>=0;i--){var d=new Date();d.setDate(d.getDate()-i);var k=d.toISOString().slice(0,10);out.push({day:k,tickets:map[k]||0})}return out}
+
+var live=document.getElementById('live');
+Promise.all([get('ticket_stats'),get('tickets_by_category'),get('tickets_per_day'),get('recent_urgent')])
+.then(function(r){stats(r[0]);cats(r[1]);var dd=fillDays(r[2]);days(dd);var rt;window.addEventListener('resize',function(){clearTimeout(rt);rt=setTimeout(function(){days(dd)},150)});urg(r[3]);
+ live.querySelector('span').textContent='Live · updated '+new Date().toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'})})
+.catch(function(){live.className='live off';live.querySelector('span').textContent='Could not reach the database. It may be paused; try again in a minute.'});
+</script>
+</body>
+</html>
