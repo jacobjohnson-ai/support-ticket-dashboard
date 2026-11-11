@@ -54,6 +54,6 @@ Example: tickets per category, using `GROUP BY` and `COUNT`.
 3. In n8n, add a **Postgres → Insert rows** step after the "Parse AI result" step of the [triage workflow](https://github.com/jacobjohnson-ai/ai-ticket-triage-n8n). Use the Session pooler connection details, table `tickets`, and "Map Automatically."
 4. In `dashboard/index.html`, replace the project URL and publishable key with your own, then open the page.
 
-![n8n saving a ticket](screenshots/n8n-save-to-database.png)
+![n8n saving a ticket](screenshots/n8n-saved-ticket.png)
 
 The tickets are sample data with fake names and `@example.com` emails, plus real test runs of the workflow.
