@@ -22,7 +22,7 @@ cross join lateral (
     ('We want to set up a weekly order for our office.', 'sales', 'medium', 5, 'Business interested in recurring orders.'),
     ('Can someone call me about a quote for an event?', 'sales', 'medium', 6, 'Event quote request.'),
     ('What are your holiday hours?', 'general', 'low', 2, 'Question about holiday hours.'),
-    ('Do you deliver to Leesburg?', 'general', 'low', 2, 'Delivery area question.'),
+    ('Do you deliver to Santa Monica?', 'general', 'low', 2, 'Delivery area question.'),
     ('How do I change my delivery address?', 'general', 'low', 3, 'Help updating delivery address.'),
     ('CLICK HERE to claim your free prize!!!', 'spam', 'low', 1, 'Spam message.')
   ) as t(message, category, urgency, score, summary)
